@@ -1,0 +1,38 @@
+﻿@model Root
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+    <h2 class="text-center fw-bold">Peliculas Favoritas</h2>
+    <br />
+    <br />
+    <span>Aqui se muestran las peliculas que ha agregado a su lista de Favoritos.</span>
+    <hr />
+    <div class="row row-cols-2">
+        @foreach (Pelicula pelicula in Model.results)
+        {
+            <div class="col-lg-6">
+                <div class="card mb-3 bg-dark" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="@pelicula.poster_path" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">@pelicula.title</h5>
+                                <span>Popularidad: @pelicula.popularity</span>
+                                <i class="fa-solid fa-star" style="color: #e3f207;"></i>
+                                <hr />
+                                <p class="card-text">@pelicula.overview</p>
+                                <p class="card-text"><small class="text-body-secondary">Release date: @pelicula.release_date</small></p>
+                                <button class="btn btn-info">Leer Más</button> <i></i> <button class="btn btn-info" href="#">Calificar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+}

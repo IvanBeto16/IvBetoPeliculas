@@ -1,0 +1,471 @@
+﻿@model ML.Producto
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    <link rel="stylesheet" href="~/css/CardsDulceria.css" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet">
+    <h2 class="text-center fw-bold">Dulceria y Botanas</h2>
+    <br />
+    <hr />
+    <span>
+        Aqui se muestran algunos de los productos que tenemos a disposicion, elige tu preferido, contamos con diferentes precios.
+        Dependiendo del tamaño y el tipo de producto son los precios.
+    </span>
+    <br />
+    <hr />
+    <!--Lugar para las cards de productos-->
+    <div class="row row-cols-3">
+        @foreach (ML.Producto producto in Model.Productos)
+        {
+            <div class="col-auto-4">
+                <div class="product">
+                    <a class="img-wrapper" href="#">
+                        <img src="@producto.Imagen" alt="Blue running shoe" />
+                    </a>
+
+                    <div class="info">
+                        <div class="title">
+                            <h5>@producto.Nombre</h5>
+                        </div>
+                        <div class="price">$ @producto.Precio</div>
+                    </div>
+
+                    <div class="actions-wrapper">
+                        <a href="#" style="color: lime"><i class="fa-solid fa-heart" style="color: white;"></i>Favoritos</a>
+                        <a href="@Url.Action("AgregarCarrito","Productos", new { idProducto = producto.IdProducto })" style="color: lime;"><i class="fa-solid fa-cart-shopping fa-flip" style="color: white;"></i>Carrito</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <br />
+    <hr />
+
+    <!--Modal para palomitas-->
+    <div class="modal fade modal-dialog-scrollable" id="exampleModalPalomitas" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Opciones de Producto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-black">
+                    <span>Elige tu opcion: </span>
+                    <hr />
+                    <h5>Sabores</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Clasicas</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Enchiladas</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Acarameladas</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Queso Cheddar</label>
+                    </div>
+                    <hr />
+                    <h5>Tamaño</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" name="Switch0">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Pequeñas</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" itemid="Switchmas5">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Medianas (+ $5)</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" itemid="Switchmas10">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Grandes  (+ $10)</label>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <label for="basic-url" class="form-label">Cantidad</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">No.</span>
+                            <input type="text" class="form-control" id="txtCantidad" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                        </div>
+                        <div class="form-text" id="basic-addon4">Verifique bien su cantidad ingresada.</div>
+                    </div>
+                    <hr />
+                    <div class="row row-cols-2">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="basic-url" class="form-label">Total</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon3">$</span>
+                                    <input type="text" class="form-control" id="txtTotal" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-black">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-success">Agregar Compra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para las palomitas de sabores-->
+    <div class="modal fade" id="exampleModalSabores" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Opciones de Producto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-black">
+                    <h5>Sabores</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Mora Azul</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Sandía</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Queso Cheddar</label>
+                    </div>
+                    <hr />
+                    <h5>Tamaño</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Pequeñas</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Medianas (+ $5)</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Grandes  (+ $10)</label>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <label for="basic-url" class="form-label">Cantidad</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">No.</span>
+                            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                        </div>
+                        <div class="form-text" id="basic-addon4">Verifique bien su cantidad ingresada.</div>
+                    </div>
+                    <hr />
+                    <div class="row row-cols-2">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="basic-url" class="form-label">Total</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon3">$</span>
+                                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-black">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-success">Agregar Compra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Combos-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Opciones del Combo</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-black">
+                    <div class="mb-3">
+                        <label for="basic-url" class="form-label">Cantidad</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">No.</span>
+                            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                        </div>
+                        <div class="form-text" id="basic-addon4">Verifique bien su cantidad ingresada.</div>
+                    </div>
+                    <hr />
+                    <div class="row row-cols-2">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="basic-url" class="form-label">Total</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon3">$</span>
+                                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-black">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-success">Agregar Compra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Modal para refresco cocacola-->
+    <div class="modal fade modal-dialog-scrollable" id="exampleModalCoca" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Opciones de Producto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-black">
+                    <span>Elige tu opcion: </span>
+                    <hr />
+                    <h5>Tamaño</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Refresco Coca-Cola Pequeño</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Refresco Coca-Cola Mediano</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Refresco Coca-Cola Grande</label>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <label for="basic-url" class="form-label">Cantidad</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">No.</span>
+                            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                        </div>
+                        <div class="form-text" id="basic-addon4">Verifique bien su cantidad ingresada.</div>
+                    </div>
+                    <hr />
+                    <div class="row row-cols-2">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="basic-url" class="form-label">Total</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon3">$</span>
+                                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-black">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-success">Agregar Compra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para refrescos de sabor-->
+    <div class="modal fade" id="exampleModalSodas" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Opciones</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-black">
+                    <h5>Tamaño</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Fanta (Naranja)</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">7-UP (Lima-Limon)</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Fresca (Toronja)</label>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <label for="basic-url" class="form-label">Cantidad</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">No.</span>
+                            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                        </div>
+                        <div class="form-text" id="basic-addon4">Verifique bien su cantidad ingresada.</div>
+                    </div>
+                    <hr />
+                    <div class="row row-cols-2">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="basic-url" class="form-label">Total</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon3">$</span>
+                                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-black">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para los helados-->
+    <div class="modal fade" id="exampleModalIce" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Opciones</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-black">
+                    <h5>Tamaño</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Pequeñas</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Medianas (+ $5)</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Grandes  (+ $10)</label>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <label for="basic-url" class="form-label">Cantidad</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">No.</span>
+                            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                        </div>
+                        <div class="form-text" id="basic-addon4">Verifique bien su cantidad ingresada.</div>
+                    </div>
+                    <hr />
+                    <div class="row row-cols-2">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="basic-url" class="form-label">Total</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon3">$</span>
+                                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-black">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para los caramelos-->
+    <div class="modal fade" id="exampleModalCaramel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Opciones</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-black">
+                    <h5>Tamaño</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Pequeñas</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Medianas (+ $5)</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Palomitas Grandes  (+ $10)</label>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <label for="basic-url" class="form-label">Cantidad</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">No.</span>
+                            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                        </div>
+                        <div class="form-text" id="basic-addon4">Verifique bien su cantidad ingresada.</div>
+                    </div>
+                    <hr />
+                    <div class="row row-cols-2">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="basic-url" class="form-label">Total</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon3">$</span>
+                                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" placeholder="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-black">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function Suma() {
+            var subtot = 0;
+            var subprecio = document.getElementById("price").innerHTML;
+            var regex = /(\d+)/g;
+            var precio = subprecio.match(regex)[0];
+
+            // var switchcero = document.getElementByName("Switch0");
+            // var switchcinco = document.getElementByName("Switchmas5");
+            // var switchdiez = document.getElementByName("Switchmas10");
+
+            // console.log(precio);
+            // document.getElementById("txtTotal").value = precio;
+
+            // if (switchcero.checked) {
+            //     subtot = precio;
+            // }
+            // if (switchcinco.checked) {
+            //     subtot = precio + 5;
+            // }
+            // if (switchdiez.ckecked) {
+            //     subtot = precio + 10;
+            // }
+            document.getElementById("txtTotal").value = precio;
+            console.log(precio);
+        }
+
+    </script>
+}

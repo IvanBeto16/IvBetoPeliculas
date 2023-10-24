@@ -1,0 +1,201 @@
+﻿@model ML.Cine
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    <h2 class="text-center fw-bold">Registro y Actualizacion de Sucursales</h2>
+    <br />
+    <br />
+    <span>Llene los campos necesarios para poder registrar la sucursal nueva.</span>
+    <hr />
+    @using (Html.BeginForm("Form", "Cine", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+    {
+        @Html.HiddenFor(model => Model.IdCine)
+        @Html.HiddenFor(model => Model.Zona.Nombre)
+        <div class="row row-cols-2">
+            <div class="col-lg-6">
+                @Html.LabelFor(model => Model.Nombre)
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-pen-to-square"></i></span>
+                    @Html.TextBoxFor(model => Model.Nombre, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-lg-6">
+                @Html.LabelFor(model => Model.Direccion)
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-location-dot"></i></span>
+                    @Html.TextBoxFor(model => Model.Direccion, new { @class = "form-control", @readonly = true, @placeholder = "Señale un punto en el mapa", @id= "txtDireccion"})
+                </div>
+            </div>
+        </div>
+        <div class="row row-cols-2">
+            <div action="col-lg-6">
+                @Html.LabelFor(model => Model.Zona.IdZona)
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-compass"></i></span>
+                    @Html.DropDownListFor(model => Model.Zona.IdZona, new SelectList(Model.Zona.Zonas, "IdZona", "Nombre"), "Seleccione la Zona", new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-lg-6">
+                @Html.LabelFor(model => Model.Ventas)
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-money-bills"></i></span>
+                    @Html.TextBoxFor(model => Model.Ventas, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+        <h4>Mapa de Direcciones</h4>
+        <div id="map"></div>
+        <br />
+        <br />
+        <button type="submit" class="btn btn-success"> Agregar Sucursal</button>
+        <a class="btn btn-danger" href="@Url.Action("GetAllCines", "Cine")"> Regresar</a>
+    }
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+    @section Scripts{
+        <script type="text/javascript">
+            (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+                key: "AIzaSyCSKBDdPPlfca_zTwyxKiicRQn1qfgRjLw",
+                v: "weekly",
+                // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
+                // Add other bootstrap parameters as needed, using camel case.
+            });
+
+            let map;
+            let position;
+            let direccion;
+
+            async function Update() {
+                // Request needed libraries.
+                const { Map } = await google.maps.importLibrary("maps");
+                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+                var geocoder;
+                var textDireccion = document.getElementById("txtDireccion").value;
+
+                if (textDireccion == "") {
+                    position = { lat: 19.33677, lng: -99.10882 };
+                    initMap(position)
+                } else {
+                    geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ 'address': textDireccion }, function (results, status) {
+                        if (status == 'OK') {
+                            var resultados = results[0].geometry.location;
+                            position = { lat: resultados.lat(), lng: resultados.lng() };
+                            initMap(position);
+                        } else {
+                            alert("Geocode error, was no successful " + status);
+                        }
+                    });
+                }
+            }
+
+            async function initMap(position) {
+                // Request needed libraries.
+                const { Map } = await google.maps.importLibrary("maps");
+                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+                map = new Map(document.getElementById("map"), {
+                    zoom: 12,
+                    center: position,
+                    mapID: "DEMO_MAP_ID",
+                });
+
+                const marker = new google.maps.Marker({
+                    map: map,
+                    position: position,
+                    title: "Ubicacion",
+                });
+
+                google.maps.event.addListener(map, 'click', function (event) {
+                    const latLng = event.latLng;
+                    marker.setPosition(latLng);
+
+                    var geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ 'latLng': event.latLng }, function (results, status) {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            $("#txtDireccion").val(results[0].formatted_address);
+                        } else {
+                            $("#txtDireccion").val("Sitio invalido no encontrado");
+                        }
+                    });
+                });
+
+                // if (textDireccion != null || textDireccion != "") {    //Caso que ya tenga direccion   (UPDATE)
+                //     var geocoder = new google.maps.Geocoder();
+                //     geocoder.geocode({ 'address': direccion }, function (results, status) {
+                //         if (status == 'OK') {
+                //             var resultados = results[0].geometry.location,
+                //                 resultados_lat = results[0].geometry.location.lat(),
+                //                 resultados_lng = results[0].geometry.location.lng();
+
+                //             map.setCenter(resultados);
+
+                //             var marker = new google.maps.Marker({
+                //                 map: map,
+                //                 position: resultados,
+                //             });
+                //             //Para los evento de click en el mapa
+                //             map.addListener('click', function (event) {
+                //                 //Se obtienen lat y long de la ubicacion
+                //                 const latLng = event.latLng;
+                //                 marker.setPosition(latLng);
+
+                //                 const geocoder = new google.maps.Geocoder();
+                //                 geocoder.geocode({ location: latLng }, function (results, status) {
+                //                     if (status == 'OK' && results[0]) {
+                //                         const direccion = results[0].formatted_address;
+                //                         document.getElementById("txtDireccion").value = direccion;
+                //                     } else {
+                //                         document.getElementById("txtDireccion").value = "No valid Address";
+                //                     }
+                //                 });
+                //             });
+                //         } else {
+                //             var mensajeError = "";
+                //             if (status === "ZERO_RESULTS") {
+                //                 mensajeError = "No hubo resultados para la dirección ingresada.";
+                //             } else if (status === "OVER_QUERY_LIMIT" || status === "REQUEST_DENIED" || status === "UNKNOWN_ERROR") {
+                //                 mensajeError = "Error general del mapa.";
+                //             } else if (status === "INVALID_REQUEST") {
+                //                 mensajeError = "Error de la web. Contacte con Name Agency.";
+                //             }
+                //             alert(mensajeError);
+                //         }
+                //     });
+                // } else {     //Caso que no haya direccion (ADD)
+                //     const marker = new google.maps.Marker({
+                //         position: position,
+                //         map: map,
+                //         title: "Seleccion Ubicacion",
+                //     });
+
+                //     map.addListener('click', function (event) {
+                //         const latLng = event.latLng;
+                //         marker.setPosition(latLng);
+
+                //         const geocoder = new google.maps.Geocoder();
+                //         geocoder.geocode({ 'latLng': latLng }, function (results, status) {
+                //             if (status == 'OK' && results[0]) {
+                //                 const direccion = results[0].formatted_address;
+                //                 document.getElementById("txtDireccion").value = direccion;
+                //             } else {
+                //                 document.getElementById("txtDireccion").value = "No valid Address";
+                //             }
+                //         });
+                //     });
+                // }
+            }
+            Update();
+            initMap(position);
+
+        </script>
+    }
+
+}

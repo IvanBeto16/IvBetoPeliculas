@@ -1,0 +1,52 @@
+﻿@model ML.Cine
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    <h2 class="text-center fw-bold">Cines Registrados</h2>
+    <br />
+    <br />
+    <span>Este es el listado de Cines que han sido registrados en el sistema.</span>
+    <span>Para agregar más sucursales, debe dar click en el boton</span>
+    <a class="btn btn-success" href="@Url.Action("Form", "Cine", new {idCine = 0})"><i class="fa-solid fa-square-plus" style="color: #f0f2f5;"></i> Agregar Cine</a>
+    <br />
+    <hr />
+    @if(Model.Cines.Count != 0)
+    {
+        <table class="table table-responsive table-bordered table-dark">
+            <thead>
+                <tr>
+                    <th>Editar Elemento</th>
+                    <th>No. Cine</th>
+                    <th>Nombre del Cine</th>
+                    <th>Direccion del Local</th>
+                    <th>Zona de Localización</th>
+                    <th>Ventas totales en ($)</th>
+                    <th>Eliminar Elemento</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(ML.Cine cine in Model.Cines)
+                {
+                    <tr>
+                        <td><a class="btn btn-info" href="@Url.Action("Form", "Cine", new {idCine = cine.IdCine})"><i class="fa-solid fa-pen-to-square" style="color: #052e76;"></i></a></td>
+                        <td>@cine.IdCine</td>
+                        <td>@cine.Nombre</td>
+                        <td>@cine.Direccion</td>
+                        <td>@cine.Zona.Nombre</td>
+                        <td>@cine.Ventas</td>
+                        <td><a class="btn btn-danger" onclick="return confirm('Seguro de eliminar el elemento?')" href="@Url.Action("Delete", "Cine", new {idCine = cine.IdCine})"><i class="fa-solid fa-eraser" style="color: #f7f9fd;"></i></a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            No tenemos Cines registrados en el sistema, no se han encontrado registros.
+        </div>
+    }
+
+    <a class="btn btn-danger" href="#">Volver al Inicio</a>
+}

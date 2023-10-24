@@ -1,0 +1,21 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    color: white;
+    background: rgb(4,7,107);
+    background: linear-gradient(90deg, rgba(4,7,107,1) 20%, rgba(13,185,203,1) 50%, rgba(4,5,40,1) 80%);
+    margin-bottom: 60px;
+}

@@ -1,0 +1,195 @@
+﻿@model ML.Venta
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    <h2 class="text-center">Carrito de Compras <i class="fa-solid fa-cart-shopping fa-flip"></i> </h2>
+    <br />
+    <hr />
+    if (Model.Carrito.Count == 0)
+    {
+        <div class="alert alert-warning" role="alert">
+            <h3 class="text-center">Mira cuánto vacío!! ...</h3>
+            <div class="container align-self-center">
+                <span>Parece que no tienes productos en el Carrito.</span><br />
+                <span>Ve a la Dulceria y agrega productos!!</span>
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div class="btn-group d-flex" role="group" aria-label="Button group with nested dropdown">
+            <a class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-brands fa-shopify"></i>Realizar Compra</a>
+            <a class="btn btn-warning" href="@Url.Action("Clear", "Productos", new { ventas = Model.Carrito})"><i class="fa-solid fa-broom"></i>Limpiar Carrito</a>
+            <!--<a class="btn btn-warning" href="~/Productos/Clear?ventas=ML.Venta"><i class="fa-solid fa-broom"></i>Limpiar Carrito</a>-->
+            <a class="btn btn-danger" href="@Url.Action("Dulceria", "Productos")"><i class="fa-solid fa-arrow-rotate-left"></i>Regresar</a>
+        </div>
+        <br />
+        <table class="table table-responsive table-dark table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Nombre de Producto</th>
+                    <th>Precio ($)</th>
+                    <th>Cantidad a Comprar</th>
+                    <th>Quitar ejemplar</th>
+                    <th>Eliminar Producto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ML.Producto producto in Model.Carrito)
+                {
+                    <tr>
+                        @if (producto.Imagen != null)
+                        {
+                            <td class="text-center"><img id="Img" src="@producto.Imagen" style="width:50px ; height:50px" /></td>
+                        }
+                        else
+                        {
+                            <td class="text-center"><img id="Img" src="https://st.depositphotos.com/2934765/53192/v/450/depositphotos_531920820-stock-illustration-photo-available-vector-icon-default.jpg" style="width:50px ; height:50px" /></td>
+                        }
+                        <td>@producto.Nombre</td>
+                        <td id="precio">@producto.Precio</td>
+                        <td id="cantidad">@producto.Cantidad</td>
+                        <td><button type="button" class="btn btn-warning"><i class="fa-solid fa-minus"></i></button></td>
+                        <td><a class="btn btn-danger" href="@Url.Action("Delete", "Productos", new {indice = Model.Carrito.IndexOf(producto), idProducto = producto.IdProducto})"><i class="fa-solid fa-trash"></i></a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <br />
+        <br />
+        <label>Total a Pagar: </label>
+        <input type="text" placeholder="0" id="txtTotal" class="form-control-sm" readonly />
+
+
+        <!--Modal para palomitas-->
+        <div class="modal fade modal-dialog-scrollable" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Pago con Tarjeta</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body bg-black">
+                        <span>Llene los campos con su información para pago con tarjeta: </span>
+                        <hr />
+                        <h5>Número de Tarjeta *</h5>
+                        <div class="input-group mb-3">
+                            @Html.TextBoxFor(model => Model.numeroTarjeta, new {@type="text", @class="form-control", @placeholder="XXXX-XXXX-XXXX-XXXX"})
+                            <!--<input type="text" class="form-control" aria-label="Amount (to the nearest dollar)" placeholder="XXXX-XXXX-XXXX-XXXX">-->
+                            <span class="input-group-text"><i class="fa-regular fa-credit-card"></i></span>
+                        </div>
+                        <hr />
+                        <h5>Fecha de Caducidad *</h5>
+                        <div class="input-group mb-3">
+                            @Html.TextBoxFor(model => Model.fechaCaducidad, new {@type="text", @class="form-control", @placeholder="MM/YY"})
+                            <!--<input type="text" class="form-control" aria-label="Amount (to the nearest dollar)" placeholder="MM/YY">-->
+                            <span class="input-group-text">MM/YY</span>
+                        </div>
+                        <div class="row row-cols-2">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="basic-url" class="form-label">Codigo de Verificacion *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon3">CVV</span>
+                                        <!--<input type="text" class="form-control" id="txtCVV" aria-describedby="basic-addon3 basic-addon4" placeholder="XXX">-->
+                                        @Html.TextBoxFor(model => Model.CVV, new {@type="text", @class="form-control", @placeholder="XXX", @id="txtCVV"})
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <span>Aceptamos cualquier banco y cualquier multinacional</span> <br />
+                        <img src="https://www.bbva.com/wp-content/uploads/2019/04/Logo-BBVA.jpg" width="70" height="50" alt="BBVA" />
+                        <img src="https://1000marcas.net/wp-content/uploads/2020/10/Citibanamex-logo.png" width="90" height="50" alt="BANAMEX" />
+                        <img src="https://www.flytap.com/-/media/Flytap/new-logos/others/partners/hsbc/hsbc-logo-white.png?h=505&w=680&la=pt-PT&hash=607C3318C9F8AC321449B739777718196866860E" width="70" height="50" alt="HSBC" />
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Banco_Santander_Logotipo.svg/2560px-Banco_Santander_Logotipo.svg.png" width="180" height="40" alt="Santander" /> <br />
+                        <center>
+                            <img src="https://play-lh.googleusercontent.com/jMECkIn97zzMi1IoWlb9SYjtbYolSPmgdLmylwIwo3pbhQ_omkRMzM0bS-PnN461hg" width="70" , height="70" alt="Master-Card" />
+                            <img src="data:image/png;base64,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"
+                                 width="90" height="70" alt="VISA" />
+                        </center>
+
+                        <hr />
+                        <div class="mb-3">
+                            <label for="basic-url" class="form-label">Titular de la Tarjeta *</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon3">Nombre</span>
+                                @Html.TextBoxFor(model => Model.titularPago, new {@type="text" ,@class="form-control" ,@id="txtCantidad", @placeholder="Jorge Castañeda"})
+                                <!--<input type="text" class="form-control" id="txtCantidad" aria-describedby="basic-addon3 basic-addon4" placeholder="Jorge Castañeda">-->
+                            </div>
+                            <div class="form-text" id="basic-addon4">Verifique bien su cantidad ingresada.</div>
+                        </div>
+                        <hr />
+                        <div class="row row-cols-2">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="basic-url" class="form-label">Total</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon3">$</span>
+                                        <!--<input type="text" class="form-control" id="txtTotal" aria-describedby="basic-addon3 basic-addon4" placeholder="1">-->
+                                        @Html.TextBoxFor(model => Model.Total, new { @type = "text", @class = "form-control", @id = "txtmodalTotal", @placeholder = "1"})
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-black">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-success" onclick="compra()">Agregar Compra</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Modal para palomitas-->
+        <div class="modal fade modal-dialog-scrollable" id="modalCompra" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Comprobante de Compra</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body bg-black">
+                        <center>
+                            <h4>Se ha realizado tu compra exitosamente!!</h4>
+                        </center>
+                        <br />
+                        <span>Puedes cerrar la ventana o puedes descargar tu comprobante de compra en PDF</span>
+                        <center><a class="btn btn-info" href="@Url.Action("CreaPDF","Productos")"><i class="fa-solid fa-file-pdf"></i> Recibo de Compra PDF</a></center>
+                    </div>
+                    <div class="modal-footer bg-black">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @section Scripts{
+        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <script type="text/javascript">
+            var precio = document.querySelectorAll("#precio");
+            var cantidad = document.querySelectorAll("#cantidad");
+            var total = 0;
+            var indice = 0;
+
+            precio.forEach(function (td) {
+                total = total + parseInt(td.textContent) * parseInt(cantidad[indice].textContent);
+                indice = indice + 1;
+            });
+            document.getElementById("txtTotal").value = total;
+            document.getElementById("txtmodalTotal").value = total;
+
+            function compra() {
+                $("#exampleModal").modal("hide");
+                $("#modalCompra").modal("show")
+            }
+        </script>
+    }
+
+    }
+
+
+}

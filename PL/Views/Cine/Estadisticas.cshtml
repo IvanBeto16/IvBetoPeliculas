@@ -1,0 +1,207 @@
+﻿@model ML.Cine
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    <h3>Estadsiticas de Cines</h3>
+    <br />
+    <span>Se muestran el mapa de las ubicaciones de los cines registrados y el porcentaje de las ventas de los cines por zona.</span>
+    <br />
+    <hr />
+    <div class="row">
+        <div class="col-lg-6">
+            <h5 class="text-center fw-bold">Grafica de ventas</h5>
+            <br />
+            <div id="myCanvas"></div>
+        </div>
+        <div class="col-lg-6">
+            <h5 class="text-center fw-bold">Mapa de Ubicaciones de Cines</h5>
+            <br />
+            <div id="map"></div>
+        </div>
+    </div>
+    <style>
+        #map {
+            height: 100%;
+            padding: 170px;
+            border-radius: 16px;
+        }
+
+        #myCanvas {
+            border-radius: 20px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
+    @section Scripts{
+        <script src="https://cdn.canvasjs.com/canvasjs.min.js"> </script>
+        <!--Codigo de Script para la creacion del mapa con multiples puntos-->
+        <script type="text/javascript">
+            (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+                key: "AIzaSyCSKBDdPPlfca_zTwyxKiicRQn1qfgRjLw",
+                v: "weekly",
+                // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
+                // Add other bootstrap parameters as needed, using camel case.
+            });
+
+            let position;
+            var geocoder;
+
+            async function initMap() {
+                const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+                const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary(
+                    "marker",
+                );
+                geocoder = new google.maps.Geocoder();
+            @foreach (ML.Cine cine in Model.Cines)
+            {
+                <text>
+                        geocoder.geocode({ 'address': '@cine.Direccion' }, function (results, status) {
+                            if (status == 'OK') {
+                                position = { lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng() };
+                                var marker = new google.maps.Marker({
+                                    position: position,
+                                    map,
+                                    title: 'Ubicacion de Cine',
+                                });
+
+                                const contentString =
+                                    '<div id="content">' +
+                                    '<div id="siteNotice">' +
+                                    "</div>" +
+                                    '<h1 id="firstHeading" class="firstHeading">Uluru</h1>' +
+                                    '<div id="bodyContent">' +
+                                    "<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large " +
+                                    "sandstone rock formation in the southern part of the " +
+                                    "Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) " +
+                                    "south west of the nearest large town, Alice Springs; 450&#160;km " +
+                                    "(280&#160;mi) by road. Kata Tjuta and Uluru are the two major " +
+                                    "features of the Uluru - Kata Tjuta National Park. Uluru is " +
+                                    "sacred to the Pitjantjatjara and Yankunytjatjara, the " +
+                                    "Aboriginal people of the area. It has many springs, waterholes, " +
+                                    "rock caves and ancient paintings. Uluru is listed as a World " +
+                                    "Heritage Site.</p>" +
+                                    '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">' +
+                                    "https://en.wikipedia.org/w/index.php?title=Uluru</a> " +
+                                    "(last visited June 22, 2009).</p>" +
+                                    "</div>" +
+                                    "</div>";
+                                // Create an info window to share between markers.
+                                const infoWindow = new InfoWindow();
+                                // Add a click listener for each marker, and set up the info window.
+                                marker.addListener("click", ({ domEvent, latLng }) => {
+                                    const { target } = domEvent;
+
+                                    infoWindow.close();
+                                    //infoWindow.setMaxWidth(200);
+                                    infoWindow.setContent(contentString);
+                                    infoWindow.open(marker.map, marker);
+                                });
+                            }
+                        });
+                </text>
+            }
+
+                const myLatLng = { lat: 19.4356332979789, lng: - 99.1412896915206 };
+
+                //tourstops.push(position);
+
+
+                const map = new Map(document.getElementById("map"), {
+                    zoom: 11,
+                    center: myLatLng,
+                    mapId: "4504f8b37365c3d0",
+                });
+
+            }
+            //ReadAddress();
+            initMap();
+
+        </script>
+
+        <!--Codigo de Script para la creacion del grafico de pastel con Canvas JS-->
+        <script type="text/javascript">
+            var TotalVentas = 0;
+            var TotalZonaNte = 0;
+            var TotalZonaSur = 0;
+            var TotalZonaEte = 0;
+            var TotalZonaOte = 0;
+
+            @foreach (ML.Cine cine in Model.Cines)
+            {
+                <text>
+                    TotalVentas = TotalVentas + @cine.Ventas;
+                </text>
+                @if (cine.Zona.Nombre == "Norte")
+                {
+                    <text>
+                        TotalZonaNte = TotalZonaNte + @cine.Ventas;
+                    var PorcentNorte = TotalZonaNte * 100 / TotalVentas;
+                    </text>
+
+                }
+                @if (cine.Zona.Nombre == "Sur")
+                {
+                    <text>
+                        TotalZonaSur = TotalZonaSur + @cine.Ventas;
+                    var PorcentSur = TotalZonaSur * 100 / TotalVentas;
+                    </text>
+
+                }
+                @if (cine.Zona.Nombre == "Este")
+                {
+                    <text>
+                        TotalZonaEte = TotalZonaEte + @cine.Ventas;
+                    var PorcentEste = TotalZonaEte * 100 / TotalVentas;
+                    </text>
+
+                }
+                @if (cine.Zona.Nombre == "Oeste")
+                {
+                    <text>
+                        TotalZonaOte = TotalZonaOte + @cine.Ventas;
+                    var PorcentOeste = TotalZonaOte * 100 / TotalVentas;
+                    </text>
+
+                }
+            }
+                console.log('Norte' + PorcentNorte);
+            console.log('Sur' + PorcentSur);
+            console.log('Este' + PorcentEste);
+            console.log('Oeste' + PorcentOeste);
+            window.onload = function () {
+
+                var chart = new CanvasJS.Chart("myCanvas", {
+                    theme: "dark2", // "light2", "dark1", "dark2"
+                    animationEnabled: true, // change to true
+                    title: {
+                        text: "Total de Ventas por Area"
+                    },
+                    data: [
+                        {
+                            // Change type to "bar", "area", "spline", "pie",etc.
+                            type: "pie",
+                            toolTipContent: "#percent %",
+                            showInLegend: true,
+                            legendText: "{indexLabel}",
+                            dataPoints: [
+                                { indexLabel: "Norte", y: PorcentNorte },
+                                { indexLabel: "Este", y: PorcentEste },
+                                { indexLabel: "Oeste", y: PorcentOeste },
+                                { indexLabel: "Sur", y: PorcentSur }
+                            ]
+                        }
+                    ]
+                });
+                chart.render();
+
+            }
+        </script>
+    }
+}
